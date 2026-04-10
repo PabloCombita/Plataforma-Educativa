@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Curso - Plataforma Educativa</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .course-header-full {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-header-full::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .course-header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .course-icon-large {
+            font-size: 5rem;
+            background: rgba(255,255,255,0.15);
+            width: 120px;
+            height: 120px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .course-header-info {
+            flex: 1;
+        }
+        
+        .course-header-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .course-header-description {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+        }
+        
+        .lessons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .lesson-item {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+        
+        .lesson-item:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            border-color: var(--primary-light);
+        }
+        
+        .lesson-number {
+            width: 50px;
+            height: 50px;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: var(--gray-700);
+            flex-shrink: 0;
+        }
+        
+        .lesson-content {
+            flex: 1;
+        }
+        
+        .lesson-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .lesson-description {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        .lesson-arrow {
+            font-size: 1.25rem;
+            color: var(--secondary);
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar-modern">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="navbar-brand">Plataforma Educativa</div>
+        <button class="btn-modern btn-danger-modern" onclick="logout()">
+            Cerrar sesión
+        </button>
+    </div>
+</nav>
+
+<!-- Contenido Principal -->
+<div class="container" style="padding-top: 2rem; padding-bottom: 3rem;">
+    
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="/cursos/">← Cursos</a>
+        <span>/</span>
+        <span id="breadcrumb-curso">Cargando...</span>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="loading-state" style="text-align: center; padding: 3rem;">
+        <div style="display: inline-block;">
+            <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px; border-color: var(--primary); border-top-color: transparent;"></div>
+        </div>
+        <p style="margin-top: 1rem; color: var(--secondary);">Cargando información del curso...</p>
+    </div>
+    
+    <!-- Contenido del Curso -->
+    <div id="course-content" style="display: none;">
+        
+        <!-- Header del Curso -->
+        <div class="course-header-full">
+            <div class="container">
+                <div class="course-header-content">
+                    <div class="course-icon-large" id="course-icon">🎓</div>
+                    <div class="course-header-info">
+                        <h1 class="course-header-title" id="course-title">Nombre del Curso</h1>
+                        <p class="course-header-description" id="course-description">Descripción del curso</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value" id="lessons-count">0</div>
+                <div class="stat-label">Lecciones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="evaluations-count">0</div>
+                <div class="stat-label">Evaluaciones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-value">A tu ritmo</div>
+                <div class="stat-label">Modalidad</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">Flexible</div>
+                <div class="stat-label">Nivel</div>
+            </div>
+        </div>
+        
+        <!-- Lecciones -->
+        <div style="margin-bottom: 3rem;">
+            <h2 class="section-title">Lecciones del curso</h2>
+            <div id="lessons-list" class="lessons-list"></div>
+            
+            <!-- Empty state para lecciones -->
+            <div id="lessons-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📝</div>
+                <h3 class="empty-state-title">No hay lecciones disponibles</h3>
+                <p class="empty-state-description">Este curso aún no tiene lecciones publicadas</p>
+            </div>
+        </div>
+        
+        <!-- Evaluaciones -->
+        <div style="margin-bottom: 3rem;">
+            <h2 class="section-title">Evaluaciones del curso</h2>
+            <div id="evaluations-list" class="lessons-list"></div>
+            
+            <!-- Empty state para evaluaciones -->
+            <div id="evaluations-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">✅</div>
+                <h3 class="empty-state-title">No hay evaluaciones disponibles</h3>
+                <p class="empty-state-description">Este curso aún no tiene evaluaciones publicadas</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Error State -->
+    <div id="error-state" style="display: none;"></div>
+    
+</div>
+
+<script>
+const API_URL = "http://127.0.0.1:8000";
+const token = localStorage.getItem("token");
+
+// Verificar autenticación
+if (!token) {
+    window.location.href = "/";
+}
+
+// Obtener ID del curso de la URL
+const urlParams = new URLSearchParams(window.location.search);
+const cursoId = urlParams.get('id');
+
+if (!cursoId) {
+    window.location.href = "/cursos/";
+}
+
+// Íconos aleatorios para cursos
+const courseIcons = ['🎓', '💡', '🔬', '📊', '🎨', '💻', '🌍', '📚', '🧪', '📐'];
+
+// Cargar datos del curso
+async function cargarCurso() {
+    try {
+        // Obtener datos del curso
+        const response = await fetch(API_URL + "/api/cursos/" + cursoId + "/", {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        
+        if (response.status === 401) {
+            localStorage.removeItem("token");
+            window.location.href = "/";
+            return;
+        }
+        
+        if (!response.ok) {
+            throw new Error("Error al cargar el curso");
+        }
+        
+        const curso = await response.json();
+        
+        // Cargar lecciones del curso
+        const lessonsResponse = await fetch(API_URL + "/api/lecciones/?curso=" + cursoId, {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        
+        const lecciones = await lessonsResponse.json();
+        const leccionesArray = Array.isArray(lecciones) ? lecciones : lecciones.results || [];
+        
+        // Cargar evaluaciones del curso
+        const evaluationsResponse = await fetch(API_URL + "/api/evaluaciones/?curso=" + cursoId, {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        
+        const evaluaciones = await evaluationsResponse.json();
+        const evaluacionesArray = Array.isArray(evaluaciones) ? evaluaciones : evaluaciones.results || [];
+        
+        // Mostrar información
+        mostrarCurso(curso, leccionesArray, evaluacionesArray);
+        
+    } catch (error) {
+        console.error(error);
+        mostrarError();
+    }
+}
+
+function mostrarCurso(curso, lecciones, evaluaciones) {
+    // Ocultar loading
+    document.getElementById("loading-state").style.display = "none";
+    document.getElementById("course-content").style.display = "block";
+    
+    // Ícono aleatorio basado en el ID
+    const iconIndex = parseInt(cursoId) % courseIcons.length;
+    const icon = courseIcons[iconIndex];
+    
+    // Actualizar header
+    document.getElementById("breadcrumb-curso").textContent = curso.nombre;
+    document.getElementById("course-icon").textContent = icon;
+    document.getElementById("course-title").textContent = curso.nombre;
+    document.getElementById("course-description").textContent = curso.descripcion;
+    
+    // Actualizar estadísticas
+    document.getElementById("lessons-count").textContent = lecciones.length;
+    document.getElementById("evaluations-count").textContent = evaluaciones.length;
+    
+    // Mostrar lecciones
+    const lessonsContainer = document.getElementById("lessons-list");
+    
+    if (lecciones.length === 0) {
+        document.getElementById("lessons-empty").style.display = "block";
+    } else {
+        lecciones.forEach((leccion, index) => {
+            const lessonItem = `
+                <div class="lesson-item" onclick="verLeccion(${leccion.id})">
+                    <div class="lesson-number">${index + 1}</div>
+                    <div class="lesson-content">
+                        <div class="lesson-title">${escapeHtml(leccion.titulo)}</div>
+                        <div class="lesson-description">${escapeHtml(leccion.contenido.substring(0, 100))}...</div>
+                    </div>
+                    <div class="lesson-arrow">→</div>
+                </div>
+            `;
+            lessonsContainer.innerHTML += lessonItem;
+        });
+    }
+    
+    // Mostrar evaluaciones
+    const evaluationsContainer = document.getElementById("evaluations-list");
+    
+    if (evaluaciones.length === 0) {
+        document.getElementById("evaluations-empty").style.display = "block";
+    } else {
+        evaluaciones.forEach((evaluacion, index) => {
+            const evaluationItem = `
+                <div class="lesson-item" onclick="verEvaluacion(${evaluacion.id})" style="border-color: var(--accent);">
+                    <div class="lesson-number" style="background: var(--accent); color: white;">✓</div>
+                    <div class="lesson-content">
+                        <div class="lesson-title">${escapeHtml(evaluacion.titulo)}</div>
+                        <div class="lesson-description">Pon a prueba tus conocimientos</div>
+                    </div>
+                    <div class="lesson-arrow">→</div>
+                </div>
+            `;
+            evaluationsContainer.innerHTML += evaluationItem;
+        });
+    }
+}
+
+function mostrarError() {
+    document.getElementById("loading-state").style.display = "none";
+    
+    const errorState = document.getElementById("error-state");
+    errorState.innerHTML = `
+        <div class="alert-modern alert-error" style="max-width: 600px; margin: 0 auto;">
+            <span>⚠️</span>
+            <div>
+                <strong>Error al cargar el curso</strong><br>
+                <span style="font-size: 0.875rem;">No se pudo obtener la información del curso.</span>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="/cursos/" class="btn-modern btn-outline-modern">← Volver a cursos</a>
+        </div>
+    `;
+    errorState.style.display = "block";
+}
+
+function verLeccion(leccionId) {
+    window.location.href = "/leccion/?id=" + leccionId;
+}
+
+function verEvaluacion(evaluacionId) {
+    window.location.href = "/evaluacion/?id=" + evaluacionId;
+}
+
+function logout() {
+    if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+    }
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Cargar curso al iniciar
+cargarCurso();
+</script>
+
+</body>
+</html>

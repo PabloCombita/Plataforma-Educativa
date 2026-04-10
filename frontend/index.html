@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plataforma Química — Frontend</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Plataforma Química</h1>
+    <nav>
+      <button id="nav-login">Iniciar sesión</button>
+      <button id="nav-home">Home</button>
+      <button id="nav-usuarios">Usuarios</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Login -->
+    <section id="view-login" class="view">
+      <h2>Iniciar Sesión</h2>
+      <div class="form">
+        <label>Correo</label>
+        <input id="login-email" type="email" placeholder="correo@dominio.com" />
+        <label>Contraseña</label>
+        <input id="login-pass" type="password" placeholder="**" />
+        <button id="btn-login">Entrar</button>
+      </div>
+    </section>
+
+    <!-- Home -->
+    <section id="view-home" class="view hidden">
+      <h2>Home</h2>
+      <p id="welcome-text">Bienvenido, invitado</p>
+      <button id="btn-logout">Cerrar sesión</button>
+    </section>
+
+    <!-- Usuarios CRUD -->
+    <section id="view-usuarios" class="view hidden">
+      <h2>Gestión de Usuarios</h2>
+
+      <div class="card">
+        <h3>Crear Usuario</h3>
+        <label>Nombre</label>
+        <input id="u-nombre" type="text" />
+        <label>Correo</label>
+        <input id="u-correo" type="email" />
+        <label>Edad</label>
+        <input id="u-edad" type="number" />
+        <button id="btn-crear">Crear</button>
+      </div>
+
+      <div class="card">
+        <h3>Usuarios existentes</h3>
+        <table id="usuarios-table">
+          <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Edad</th><th>Acciones</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Plataforma Química — Frontend (HTML/CSS/JS)</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

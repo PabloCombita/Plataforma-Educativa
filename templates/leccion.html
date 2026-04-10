@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección - Plataforma Educativa</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .lesson-header {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .lesson-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .lesson-badge {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .lesson-title-main {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .lesson-subtitle {
+            font-size: 1.125rem;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+        
+        .lesson-content-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .lesson-content {
+            font-size: 1.0625rem;
+            line-height: 1.8;
+            color: var(--gray-800);
+        }
+        
+        .lesson-content p {
+            margin-bottom: 1.25rem;
+        }
+        
+        .lesson-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .lesson-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .lesson-content ul, .lesson-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .lesson-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .lesson-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+        
+        .nav-button {
+            flex: 1;
+            max-width: 300px;
+        }
+        
+        .progress-indicator {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar-container {
+            background: var(--gray-100);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+        }
+        
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            height: 100%;
+            transition: width var(--transition-base);
+        }
+        
+        .progress-text {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar-modern">
+    <div class="container" style="max-width: 1200px; display: flex; justify-content: space-between; align-items: center;">
+        <div class="navbar-brand">Plataforma Educativa</div>
+        <button class="btn-modern btn-danger-modern" onclick="logout()">
+            Cerrar sesión
+        </button>
+    </div>
+</nav>
+
+<!-- Contenido Principal -->
+<div class="container" style="padding-top: 2rem; padding-bottom: 3rem;">
+    
+    <!-- Loading State -->
+    <div id="loading-state" style="text-align: center; padding: 3rem;">
+        <div style="display: inline-block;">
+            <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px; border-color: var(--primary); border-top-color: transparent;"></div>
+        </div>
+        <p style="margin-top: 1rem; color: var(--secondary);">Cargando lección...</p>
+    </div>
+    
+    <!-- Contenido de la Lección -->
+    <div id="lesson-content" style="display: none;">
+        
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/cursos/">← Cursos</a>
+            <span>/</span>
+            <a href="#" id="breadcrumb-curso-link">Curso</a>
+            <span>/</span>
+            <span id="breadcrumb-leccion">Lección</span>
+        </div>
+        
+        <!-- Indicador de Progreso -->
+        <div class="progress-indicator">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 0.9375rem;">Progreso del curso</span>
+                <span style="font-size: 0.875rem; color: var(--secondary);" id="progress-percentage">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progress-lessons">0 de 0</span> lecciones completadas
+            </div>
+        </div>
+        
+        <!-- Header de la Lección -->
+        <div class="lesson-header">
+            <div class="lesson-meta">
+                <span class="lesson-badge" id="lesson-number">Lección 1</span>
+                <span class="lesson-badge">📖 Lectura</span>
+            </div>
+            <h1 class="lesson-title-main" id="lesson-title">Título de la Lección</h1>
+            <p class="lesson-subtitle" id="lesson-subtitle">Descripción breve de la lección</p>
+        </div>
+        
+        <!-- Contenido de la Lección -->
+        <div class="lesson-content-card">
+            <div class="lesson-content" id="lesson-text">
+                <!-- El contenido se cargará aquí -->
+            </div>
+        </div>
+        
+        <!-- Navegación entre lecciones -->
+        <div class="lesson-navigation">
+            <button class="btn-modern btn-outline-modern nav-button" id="prev-lesson" style="display: none;" onclick="irLeccionAnterior()">
+                ← Lección anterior
+            </button>
+            <div style="flex: 1;"></div>
+            <button class="btn-modern btn-primary-modern nav-button" id="next-lesson" style="display: none;" onclick="irLeccionSiguiente()">
+                Siguiente lección →
+            </button>
+            <button class="btn-modern btn-primary-modern nav-button" id="back-to-course" style="display: none;" onclick="volverAlCurso()">
+                ✓ Finalizar curso
+            </button>
+        </div>
+        
+    </div>
+    
+    <!-- Error State -->
+    <div id="error-state" style="display: none;"></div>
+    
+</div>
+
+<script>
+const API_URL = "http://127.0.0.1:8000";
+const token = localStorage.getItem("token");
+
+// Verificar autenticación
+if (!token) {
+    window.location.href = "/";
+}
+
+// Obtener ID de la lección de la URL
+const urlParams = new URLSearchParams(window.location.search);
+const leccionId = urlParams.get('id');
+
+if (!leccionId) {
+    window.location.href = "/cursos/";
+}
+
+let cursoId = null;
+let todasLasLecciones = [];
+let leccionActualIndex = 0;
+
+// Cargar datos de la lección
+async function cargarLeccion() {
+    try {
+        // Obtener datos de la lección
+        const response = await fetch(API_URL + "/api/lecciones/" + leccionId + "/", {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        
+        if (response.status === 401) {
+            localStorage.removeItem("token");
+            window.location.href = "/";
+            return;
+        }
+        
+        if (!response.ok) {
+            throw new Error("Error al cargar la lección");
+        }
+        
+        const leccion = await response.json();
+        cursoId = leccion.curso;
+        
+        // Obtener datos del curso
+        const cursoResponse = await fetch(API_URL + "/api/cursos/" + cursoId + "/", {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        
+        const curso = await cursoResponse.json();
+        
+        // Obtener todas las lecciones del curso
+        const leccionesResponse = await fetch(API_URL + "/api/lecciones/?curso=" + cursoId, {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        });
+        
+        const leccionesData = await leccionesResponse.json();
+        todasLasLecciones = Array.isArray(leccionesData) ? leccionesData : leccionesData.results || [];
+        
+        // Encontrar el índice de la lección actual
+        leccionActualIndex = todasLasLecciones.findIndex(l => l.id == leccionId);
+        
+        // Mostrar información
+        mostrarLeccion(leccion, curso, todasLasLecciones, leccionActualIndex);
+        
+    } catch (error) {
+        console.error(error);
+        mostrarError();
+    }
+}
+
+function mostrarLeccion(leccion, curso, lecciones, index) {
+    // Ocultar loading
+    document.getElementById("loading-state").style.display = "none";
+    document.getElementById("lesson-content").style.display = "block";
+    
+    // Actualizar breadcrumb
+    document.getElementById("breadcrumb-curso-link").textContent = curso.nombre;
+    document.getElementById("breadcrumb-curso-link").href = "/detalle-curso/?id=" + cursoId;
+    document.getElementById("breadcrumb-leccion").textContent = leccion.titulo;
+    
+    // Actualizar progreso
+    const totalLecciones = lecciones.length;
+    const leccionesCompletadas = index; // Asumimos que las anteriores están completadas
+    const porcentaje = Math.round((leccionesCompletadas / totalLecciones) * 100);
+    
+    document.getElementById("progress-percentage").textContent = porcentaje + "%";
+    document.getElementById("progress-bar").style.width = porcentaje + "%";
+    document.getElementById("progress-lessons").textContent = leccionesCompletadas + " de " + totalLecciones;
+    
+    // Actualizar header
+    document.getElementById("lesson-number").textContent = "Lección " + (index + 1);
+    document.getElementById("lesson-title").textContent = leccion.titulo;
+    document.getElementById("lesson-subtitle").textContent = "Parte del curso: " + curso.nombre;
+    
+    // Actualizar contenido (convertir saltos de línea a párrafos)
+    const contenidoFormateado = formatearContenido(leccion.contenido);
+    document.getElementById("lesson-text").innerHTML = contenidoFormateado;
+    
+    // Mostrar/ocultar botones de navegación
+    const prevButton = document.getElementById("prev-lesson");
+    const nextButton = document.getElementById("next-lesson");
+    const backButton = document.getElementById("back-to-course");
+    
+    if (index > 0) {
+        prevButton.style.display = "block";
+    }
+    
+    if (index < lecciones.length - 1) {
+        nextButton.style.display = "block";
+        backButton.style.display = "none";
+    } else {
+        nextButton.style.display = "none";
+        backButton.style.display = "block";
+    }
+}
+
+function formatearContenido(texto) {
+    // Convertir texto plano en HTML con párrafos
+    const parrafos = texto.split('\n\n');
+    return parrafos.map(p => {
+        if (p.trim()) {
+            return '<p>' + escapeHtml(p.trim()).replace(/\n/g, '<br>') + '</p>';
+        }
+        return '';
+    }).join('');
+}
+
+function irLeccionAnterior() {
+    if (leccionActualIndex > 0) {
+        const leccionAnterior = todasLasLecciones[leccionActualIndex - 1];
+        window.location.href = "/leccion/?id=" + leccionAnterior.id;
+    }
+}
+
+function irLeccionSiguiente() {
+    if (leccionActualIndex < todasLasLecciones.length - 1) {
+        const leccionSiguiente = todasLasLecciones[leccionActualIndex + 1];
+        window.location.href = "/leccion/?id=" + leccionSiguiente.id;
+    }
+}
+
+function volverAlCurso() {
+    window.location.href = "/detalle-curso/?id=" + cursoId;
+}
+
+function mostrarError() {
+    document.getElementById("loading-state").style.display = "none";
+    
+    const errorState = document.getElementById("error-state");
+    errorState.innerHTML = `
+        <div class="alert-modern alert-error" style="max-width: 600px; margin: 0 auto;">
+            <span>⚠️</span>
+            <div>
+                <strong>Error al cargar la lección</strong><br>
+                <span style="font-size: 0.875rem;">No se pudo obtener la información de la lección.</span>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="/cursos/" class="btn-modern btn-outline-modern">← Volver a cursos</a>
+        </div>
+    `;
+    errorState.style.display = "block";
+}
+
+function logout() {
+    if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+    }
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Cargar lección al iniciar
+cargarLeccion();
+</script>
+
+</body>
+</html>
