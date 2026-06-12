@@ -15,6 +15,7 @@ from .views import (
     admin_usuarios_view,
     admin_inscripciones_view,
     admin_lecciones_view,
+    admin_evaluaciones_view,
 )
 
 
@@ -37,6 +38,7 @@ urlpatterns = [
     path("admin-usuarios/", admin_usuarios_view, name="admin_usuarios"),
     path("admin-inscripciones/", admin_inscripciones_view, name="admin_inscripciones"),
     path("admin-lecciones/", admin_lecciones_view, name="admin_lecciones"),
+    path("admin-evaluaciones/", admin_evaluaciones_view, name="admin_evaluaciones"),
 
     path("admin/", admin.site.urls),
 
