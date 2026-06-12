@@ -39,3 +39,7 @@ def admin_usuarios_view(request):
 
 def admin_inscripciones_view(request):
     return render(request, "admin_inscripciones.html")
+
+
+def admin_lecciones_view(request):
+    return render(request, "admin_lecciones.html")
