@@ -10,6 +10,10 @@ from .views import (
     leccion_view,
     evaluacion_view,
     usuarios_view,
+    admin_dashboard_view,
+    admin_cursos_view,
+    admin_usuarios_view,
+    admin_inscripciones_view,
 )
 
 
@@ -20,11 +24,17 @@ admin.site.index_title = "Panel de administración"
 
 urlpatterns = [
     path("", login_view, name="login"),
+
     path("dashboard/", dashboard_view, name="dashboard"),
     path("cursos/", cursos_view, name="cursos"),
     path("leccion/", leccion_view, name="leccion"),
     path("evaluacion/", evaluacion_view, name="evaluacion"),
     path("usuarios/", usuarios_view, name="usuarios"),
+
+    path("admin-dashboard/", admin_dashboard_view, name="admin_dashboard"),
+    path("admin-cursos/", admin_cursos_view, name="admin_cursos"),
+    path("admin-usuarios/", admin_usuarios_view, name="admin_usuarios"),
+    path("admin-inscripciones/", admin_inscripciones_view, name="admin_inscripciones"),
 
     path("admin/", admin.site.urls),
 

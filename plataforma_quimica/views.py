@@ -23,3 +23,19 @@ def evaluacion_view(request):
 
 def usuarios_view(request):
     return render(request, "usuarios.html")
+
+
+def admin_dashboard_view(request):
+    return render(request, "admin_dashboard.html")
+
+
+def admin_cursos_view(request):
+    return render(request, "admin_cursos.html")
+
+
+def admin_usuarios_view(request):
+    return render(request, "admin_usuarios.html")
+
+
+def admin_inscripciones_view(request):
+    return render(request, "admin_inscripciones.html")

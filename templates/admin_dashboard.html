@@ -1,0 +1,91 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Admin - Plataforma Educativa</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/admin-dashboard/">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="nav-logo me-2">
+            <span>Plataforma Educativa - Admin</span>
+        </a>
+
+        <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <h2 class="section-title">Panel de administración</h2>
+    <p class="text-muted">Bienvenido, <span id="usuario"></span>. Gestiona la información principal del sistema.</p>
+
+    <div class="row mt-4">
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 module-card">
+                <div class="card-body">
+                    <h5 class="fw-bold">Cursos</h5>
+                    <p class="text-muted">Crear, editar y eliminar cursos.</p>
+                    <a href="/admin-cursos/" class="btn btn-primary">Gestionar cursos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 module-card">
+                <div class="card-body">
+                    <h5 class="fw-bold">Usuarios</h5>
+                    <p class="text-muted">Crear, editar, eliminar y consultar usuarios.</p>
+                    <a href="/admin-usuarios/" class="btn btn-primary">Gestionar usuarios</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 module-card">
+                <div class="card-body">
+                    <h5 class="fw-bold">Inscripciones</h5>
+                    <p class="text-muted">Inscribir estudiantes a cursos.</p>
+                    <a href="/admin-inscripciones/" class="btn btn-primary">Gestionar inscripciones</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+const rol = localStorage.getItem("rol");
+const username = localStorage.getItem("username");
+
+if (!token) {
+    window.location.href = "/";
+}
+
+if (rol !== "admin") {
+    window.location.href = "/dashboard/";
+}
+
+document.getElementById("usuario").innerText = username || "admin";
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("rol");
+    window.location.href = "/";
+}
+</script>
+
+</body>
+</html>

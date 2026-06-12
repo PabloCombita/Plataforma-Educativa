@@ -1,0 +1,213 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Usuarios - Plataforma Educativa</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/admin-dashboard/">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="nav-logo me-2">
+            <span>Administrar usuarios</span>
+        </a>
+
+        <div>
+            <a href="/admin-dashboard/" class="btn btn-outline-light me-2">Panel</a>
+            <button class="btn btn-danger" onclick="logout()">Cerrar sesión</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <h2 class="section-title">Gestión de usuarios</h2>
+    <p class="text-muted">Crear, editar, eliminar y consultar usuarios.</p>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold">Formulario de usuario</h5>
+
+            <input type="hidden" id="usuarioId">
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" id="username" class="form-control">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Correo</label>
+                    <input type="email" id="email" class="form-control">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="password" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="is_staff">
+                <label class="form-check-label" for="is_staff">
+                    Usuario administrador
+                </label>
+            </div>
+
+            <button class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
+            <button class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h5 class="fw-bold">Usuarios registrados</h5>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios"></tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+const rol = localStorage.getItem("rol");
+
+if (!token) {
+    window.location.href = "/";
+}
+
+if (rol !== "admin") {
+    window.location.href = "/dashboard/";
+}
+
+function cargarUsuarios() {
+    fetch("/api/usuarios/usuarios/", {
+        headers: {
+            "Authorization": "Token " + token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const usuarios = data.results || data;
+        const tabla = document.getElementById("tablaUsuarios");
+        tabla.innerHTML = "";
+
+        usuarios.forEach(usuario => {
+            tabla.innerHTML += `
+                <tr>
+                    <td>${usuario.id}</td>
+                    <td>${usuario.username}</td>
+                    <td>${usuario.email || ""}</td>
+                    <td>${usuario.rol}</td>
+                    <td>${usuario.is_active ? "Sí" : "No"}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarUsuario(${usuario.id}, '${usuario.username}', '${usuario.email || ""}', ${usuario.is_staff})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+function guardarUsuario() {
+    const id = document.getElementById("usuarioId").value;
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const is_staff = document.getElementById("is_staff").checked;
+
+    const body = {
+        username: username,
+        email: email,
+        is_staff: is_staff,
+        is_superuser: false,
+        is_active: true
+    };
+
+    if (password) {
+        body.password = password;
+    }
+
+    const url = id ? `/api/usuarios/usuarios/${id}/` : "/api/usuarios/usuarios/";
+    const method = id ? "PUT" : "POST";
+
+    fetch(url, {
+        method: method,
+        headers: {
+            "Authorization": "Token " + token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .then(data => {
+        limpiarFormulario();
+        cargarUsuarios();
+    });
+}
+
+function editarUsuario(id, username, email, is_staff) {
+    document.getElementById("usuarioId").value = id;
+    document.getElementById("username").value = username;
+    document.getElementById("email").value = email;
+    document.getElementById("password").value = "";
+    document.getElementById("is_staff").checked = is_staff;
+}
+
+function eliminarUsuario(id) {
+    if (!confirm("¿Deseas eliminar este usuario?")) {
+        return;
+    }
+
+    fetch(`/api/usuarios/usuarios/${id}/`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Token " + token
+        }
+    })
+    .then(() => cargarUsuarios());
+}
+
+function limpiarFormulario() {
+    document.getElementById("usuarioId").value = "";
+    document.getElementById("username").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("is_staff").checked = false;
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("rol");
+    window.location.href = "/";
+}
+
+cargarUsuarios();
+</script>
+
+</body>
+</html>
