@@ -1,574 +1,66 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Plataforma Educativa</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="/static/css/styles.css">
-    
-    <style>
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-        
-        .welcome-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .welcome-card::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .welcome-greeting {
-            font-size: 0.9375rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-        
-        .welcome-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-        }
-        
-        .welcome-subtitle {
-            font-size: 1.0625rem;
-            opacity: 0.85;
-        }
-        
-        .stats-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        
-        .stat-card-dashboard {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            display: flex;
-            align-items: start;
-            gap: 1rem;
-            transition: all var(--transition-base);
-        }
-        
-        .stat-card-dashboard:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-        
-        .stat-icon-dashboard {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-        
-        .stat-icon-dashboard.blue {
-            background: rgba(37, 99, 235, 0.1);
-        }
-        
-        .stat-icon-dashboard.green {
-            background: rgba(16, 185, 129, 0.1);
-        }
-        
-        .stat-icon-dashboard.amber {
-            background: rgba(245, 158, 11, 0.1);
-        }
-        
-        .stat-icon-dashboard.purple {
-            background: rgba(139, 92, 246, 0.1);
-        }
-        
-        .stat-info {
-            flex: 1;
-        }
-        
-        .stat-value-dashboard {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            line-height: 1;
-            margin-bottom: 0.375rem;
-        }
-        
-        .stat-label-dashboard {
-            font-size: 0.875rem;
-            color: var(--secondary);
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .section-title-dashboard {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-        
-        .view-all-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 0.9375rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: all var(--transition-base);
-        }
-        
-        .view-all-link:hover {
-            gap: 0.5rem;
-        }
-        
-        .courses-grid-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        
-        .action-card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            text-align: center;
-            transition: all var(--transition-base);
-            cursor: pointer;
-        }
-        
-        .action-card:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-3px);
-            border-color: var(--primary-light);
-        }
-        
-        .action-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .action-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-        }
-        
-        .action-description {
-            font-size: 0.875rem;
-            color: var(--secondary);
-        }
-        
-        .progress-section {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 3rem;
-        }
-        
-        .progress-header {
-            margin-bottom: 1.5rem;
-        }
-        
-        .progress-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-        }
-        
-        .progress-subtitle {
-            font-size: 0.875rem;
-            color: var(--secondary);
-        }
-        
-        .progress-bar-large {
-            background: var(--gray-100);
-            height: 12px;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-bottom: 0.75rem;
-        }
-        
-        .progress-fill-large {
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-            height: 100%;
-            transition: width var(--transition-base);
-        }
-        
-        .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-            color: var(--secondary);
-        }
-    </style>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Inicio - Plataforma Educativa{% endblock %}
 
-<!-- Navbar -->
-<nav class="navbar-modern">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="navbar-brand">Plataforma Educativa</div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <a href="/cursos/" class="btn-modern btn-outline-modern" style="text-decoration: none;">
-                Ver todos los cursos
-            </a>
-            <button class="btn-modern btn-danger-modern" onclick="logout()">
-                Cerrar sesión
-            </button>
-        </div>
-    </div>
-</nav>
+{% block content %}
 
-<!-- Contenido Principal -->
-<div class="container" style="padding-top: 2rem; padding-bottom: 3rem;">
-    
-    <!-- Loading State -->
-    <div id="loading-state" style="text-align: center; padding: 3rem;">
-        <div style="display: inline-block;">
-            <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px; border-color: var(--primary); border-top-color: transparent;"></div>
+<div class="container mt-5">
+
+    <div class="row align-items-center mb-5">
+        <div class="col-md-8">
+            <h1 class="fw-bold">Bienvenido a la Plataforma Educativa</h1>
+            <p class="text-muted">
+                Sistema de aprendizaje orientado a cursos, lecciones, evaluaciones y seguimiento del progreso del estudiante.
+            </p>
         </div>
-        <p style="margin-top: 1rem; color: var(--secondary);">Cargando tu dashboard...</p>
-    </div>
-    
-    <!-- Dashboard Content -->
-    <div id="dashboard-content" style="display: none;">
-        
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-            <div class="welcome-content">
-                <p class="welcome-greeting">¡Bienvenido de nuevo!</p>
-                <h1 class="welcome-title" id="user-name">Estudiante</h1>
-                <p class="welcome-subtitle">Continúa tu camino de aprendizaje</p>
-            </div>
-        </div>
-        
-        <!-- Stats Grid -->
-        <div class="stats-dashboard">
-            <div class="stat-card-dashboard">
-                <div class="stat-icon-dashboard blue">📚</div>
-                <div class="stat-info">
-                    <div class="stat-value-dashboard" id="total-courses">0</div>
-                    <div class="stat-label-dashboard">Cursos disponibles</div>
-                </div>
-            </div>
-            
-            <div class="stat-card-dashboard">
-                <div class="stat-icon-dashboard green">📖</div>
-                <div class="stat-info">
-                    <div class="stat-value-dashboard" id="total-lessons">0</div>
-                    <div class="stat-label-dashboard">Lecciones totales</div>
-                </div>
-            </div>
-            
-            <div class="stat-card-dashboard">
-                <div class="stat-icon-dashboard amber">✅</div>
-                <div class="stat-info">
-                    <div class="stat-value-dashboard" id="total-evaluations">0</div>
-                    <div class="stat-label-dashboard">Evaluaciones</div>
-                </div>
-            </div>
-            
-            <div class="stat-card-dashboard">
-                <div class="stat-icon-dashboard purple">🎯</div>
-                <div class="stat-info">
-                    <div class="stat-value-dashboard" id="completion-rate">0%</div>
-                    <div class="stat-label-dashboard">Progreso general</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Progress Section -->
-        <div class="progress-section">
-            <div class="progress-header">
-                <h3 class="progress-title">Tu progreso de aprendizaje</h3>
-                <p class="progress-subtitle">Sigue así, estás haciendo un gran trabajo</p>
-            </div>
-            <div class="progress-bar-large">
-                <div class="progress-fill-large" id="progress-fill" style="width: 0%;"></div>
-            </div>
-            <div class="progress-stats">
-                <span id="progress-text">0 de 0 contenidos completados</span>
-                <span id="progress-percentage">0%</span>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="section-header">
-            <h2 class="section-title-dashboard">Acciones rápidas</h2>
-        </div>
-        
-        <div class="quick-actions">
-            <div class="action-card" onclick="window.location.href='/cursos/'">
-                <div class="action-icon">🔍</div>
-                <h3 class="action-title">Explorar cursos</h3>
-                <p class="action-description">Descubre nuevos contenidos para aprender</p>
-            </div>
-            
-            <div class="action-card" onclick="continuarAprendiendo()">
-                <div class="action-icon">▶️</div>
-                <h3 class="action-title">Continuar aprendiendo</h3>
-                <p class="action-description">Retoma donde lo dejaste</p>
-            </div>
-            
-            <div class="action-card" onclick="window.location.href='/cursos/'">
-                <div class="action-icon">📊</div>
-                <h3 class="action-title">Ver mi progreso</h3>
-                <p class="action-description">Revisa tu avance en cada curso</p>
-            </div>
-        </div>
-        
-        <!-- Recent Courses -->
-        <div class="section-header">
-            <h2 class="section-title-dashboard">Cursos disponibles</h2>
-            <a href="/cursos/" class="view-all-link">
-                Ver todos →
+
+        <div class="col-md-4 text-md-end">
+            <a href="/cursos/" class="btn btn-primary btn-lg">
+                Ver cursos
             </a>
         </div>
-        
-        <div id="courses-container" class="courses-grid-dashboard"></div>
-        
-        <!-- Empty State -->
-        <div id="empty-courses" class="empty-state" style="display: none;">
-            <div class="empty-state-icon">📚</div>
-            <h3 class="empty-state-title">No hay cursos disponibles</h3>
-            <p class="empty-state-description">Pronto habrá nuevos cursos para ti</p>
-        </div>
-        
     </div>
-    
-    <!-- Error State -->
-    <div id="error-state" style="display: none;"></div>
-    
+
+    <div class="row">
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 module-card">
+                <div class="card-body">
+                    <h5 class="fw-bold">Cursos</h5>
+                    <p class="text-muted">Consulta los cursos disponibles dentro de la plataforma.</p>
+                    <a href="/cursos/" class="btn btn-outline-primary btn-sm">Entrar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 module-card">
+                <div class="card-body">
+                    <h5 class="fw-bold">Lecciones</h5>
+                    <p class="text-muted">Accede a los contenidos de aprendizaje asociados a cada curso.</p>
+                    <a href="/cursos/" class="btn btn-outline-primary btn-sm">Ver desde cursos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 module-card">
+                <div class="card-body">
+                    <h5 class="fw-bold">Evaluaciones</h5>
+                    <p class="text-muted">Responde evaluaciones y valida tus conocimientos.</p>
+                    <a href="/cursos/" class="btn btn-outline-primary btn-sm">Ver evaluaciones</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
-const API_URL = "http://127.0.0.1:8000";
-const token = localStorage.getItem("token");
-
-// Verificar autenticación
-if (!token) {
-    window.location.href = "/";
-}
-
-// Íconos para cursos
-const courseIcons = ['🎓', '💡', '🔬', '📊', '🎨', '💻', '🌍', '📚', '🧪', '📐'];
-
-// Cargar datos del dashboard
-async function cargarDashboard() {
-    try {
-        // Obtener cursos
-        const cursosResponse = await fetch(API_URL + "/api/cursos/", {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        });
-        
-        if (cursosResponse.status === 401) {
-            localStorage.removeItem("token");
-            window.location.href = "/";
-            return;
-        }
-        
-        if (!cursosResponse.ok) {
-            throw new Error("Error al cargar los cursos");
-        }
-        
-        const cursosData = await cursosResponse.json();
-        const cursos = Array.isArray(cursosData) ? cursosData : cursosData.results || [];
-        
-        // Obtener todas las lecciones
-        const leccionesResponse = await fetch(API_URL + "/api/lecciones/", {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        });
-        
-        const leccionesData = await leccionesResponse.json();
-        const lecciones = Array.isArray(leccionesData) ? leccionesData : leccionesData.results || [];
-        
-        // Obtener todas las evaluaciones
-        const evaluacionesResponse = await fetch(API_URL + "/api/evaluaciones/", {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        });
-        
-        const evaluacionesData = await evaluacionesResponse.json();
-        const evaluaciones = Array.isArray(evaluacionesData) ? evaluacionesData : evaluacionesData.results || [];
-        
-        // Mostrar dashboard
-        mostrarDashboard(cursos, lecciones, evaluaciones);
-        
-    } catch (error) {
-        console.error(error);
-        mostrarError();
-    }
-}
-
-function mostrarDashboard(cursos, lecciones, evaluaciones) {
-    // Ocultar loading
-    document.getElementById("loading-state").style.display = "none";
-    document.getElementById("dashboard-content").style.display = "block";
-    
-    // Mostrar saludo genérico
-    document.getElementById("user-name").textContent = "¡Hola, Estudiante!";
-    
-    // Actualizar estadísticas
-    document.getElementById("total-courses").textContent = cursos.length;
-    document.getElementById("total-lessons").textContent = lecciones.length;
-    document.getElementById("total-evaluations").textContent = evaluaciones.length;
-    
-    // Calcular progreso (simulado - en producción vendría del backend)
-    const totalContenidos = lecciones.length + evaluaciones.length;
-    const completados = Math.floor(totalContenidos * 0.35); // Simulamos 35% completado
-    const porcentaje = totalContenidos > 0 ? Math.round((completados / totalContenidos) * 100) : 0;
-    
-    document.getElementById("completion-rate").textContent = porcentaje + "%";
-    document.getElementById("progress-fill").style.width = porcentaje + "%";
-    document.getElementById("progress-text").textContent = completados + " de " + totalContenidos + " contenidos completados";
-    document.getElementById("progress-percentage").textContent = porcentaje + "%";
-    
-    // Mostrar cursos (máximo 6 en dashboard)
-    const coursesContainer = document.getElementById("courses-container");
-    
-    if (cursos.length === 0) {
-        document.getElementById("empty-courses").style.display = "block";
-    } else {
-        const cursosAMostrar = cursos.slice(0, 6);
-        
-        cursosAMostrar.forEach((curso, index) => {
-            const icon = courseIcons[index % courseIcons.length];
-            
-            const courseCard = `
-                <div class="card-course" onclick="verCurso(${curso.id})" style="cursor: pointer;">
-                    <div class="card-course-header">
-                        <div class="card-course-icon">${icon}</div>
-                    </div>
-                    <div class="card-course-body">
-                        <h3 class="card-course-title">${escapeHtml(curso.nombre)}</h3>
-                        <p class="card-course-description">${escapeHtml(curso.descripcion)}</p>
-                    </div>
-                    <div class="card-course-footer">
-                        <div class="card-course-meta">
-                            <div class="card-course-meta-item">
-                                <span>📖</span>
-                                <span>Curso completo</span>
-                            </div>
-                            <div class="card-course-meta-item">
-                                <span>⏱️</span>
-                                <span>A tu ritmo</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            coursesContainer.innerHTML += courseCard;
-        });
-    }
-}
-
-function verCurso(cursoId) {
-    window.location.href = "/detalle-curso/?id=" + cursoId;
-}
-
-function continuarAprendiendo() {
-    // En producción, esto llevaría a la última lección/curso visitado
-    window.location.href = "/cursos/";
-}
-
-function mostrarError() {
-    document.getElementById("loading-state").style.display = "none";
-    
-    const errorState = document.getElementById("error-state");
-    errorState.innerHTML = `
-        <div class="alert-modern alert-error" style="max-width: 600px; margin: 0 auto;">
-            <span>⚠️</span>
-            <div>
-                <strong>Error al cargar el dashboard</strong><br>
-                <span style="font-size: 0.875rem;">No se pudo obtener la información. Por favor, intenta de nuevo.</span>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 1.5rem;">
-            <button class="btn-modern btn-primary-modern" onclick="location.reload()">
-                Reintentar
-            </button>
-        </div>
-    `;
-    errorState.style.display = "block";
-}
-
-function logout() {
-    if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
-        localStorage.removeItem("token");
-        window.location.href = "/";
-    }
-}
-
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
-}
-
-// Cargar dashboard al iniciar
-cargarDashboard();
+verificarSesion();
 </script>
-
-</body>
-</html>
+{% endblock %}

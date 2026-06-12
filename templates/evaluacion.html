@@ -1,646 +1,113 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluación - Plataforma Educativa</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="/static/css/styles.css">
-    
-    <style>
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-        
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--secondary);
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .breadcrumb a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        .evaluation-header {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: white;
-            padding: 2.5rem 2rem;
-            border-radius: var(--radius-lg);
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .evaluation-header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .evaluation-header-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .evaluation-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        
-        .evaluation-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .evaluation-subtitle {
-            font-size: 1.125rem;
-            opacity: 0.9;
-        }
-        
-        .evaluation-info {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .info-icon {
-            font-size: 1.5rem;
-        }
-        
-        .info-text {
-            flex: 1;
-        }
-        
-        .info-label {
-            font-size: 0.875rem;
-            color: var(--secondary);
-            margin-bottom: 0.125rem;
-        }
-        
-        .info-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-        
-        .question-card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .question-header {
-            display: flex;
-            align-items: start;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .question-number {
-            background: var(--primary);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-        
-        .question-text {
-            flex: 1;
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            line-height: 1.5;
-        }
-        
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .option-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            border: 1.5px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all var(--transition-base);
-        }
-        
-        .option-item:hover {
-            border-color: var(--primary);
-            background: var(--gray-50);
-        }
-        
-        .option-item.selected {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-        
-        .option-radio {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--gray-400);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .option-item.selected .option-radio {
-            border-color: var(--primary);
-        }
-        
-        .option-item.selected .option-radio::after {
-            content: "";
-            width: 10px;
-            height: 10px;
-            background: var(--primary);
-            border-radius: 50%;
-        }
-        
-        .option-text {
-            flex: 1;
-            font-size: 1rem;
-            color: var(--gray-800);
-        }
-        
-        .submit-section {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            text-align: center;
-            margin-top: 2rem;
-        }
-        
-        .result-card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 3rem 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .result-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-        
-        .result-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-        }
-        
-        .result-score {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-        
-        .result-message {
-            font-size: 1.125rem;
-            color: var(--secondary);
-            margin-bottom: 2rem;
-        }
-        
-        .result-details {
-            display: inline-block;
-            background: var(--gray-50);
-            padding: 1rem 2rem;
-            border-radius: var(--radius-md);
-            font-size: 0.9375rem;
-            color: var(--secondary);
-        }
-    </style>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Evaluación - Plataforma Educativa{% endblock %}
 
-<!-- Navbar -->
-<nav class="navbar-modern">
-    <div class="container" style="max-width: 1200px; display: flex; justify-content: space-between; align-items: center;">
-        <div class="navbar-brand">Plataforma Educativa</div>
-        <button class="btn-modern btn-danger-modern" onclick="logout()">
-            Cerrar sesión
-        </button>
-    </div>
-</nav>
+{% block content %}
 
-<!-- Contenido Principal -->
-<div class="container" style="padding-top: 2rem; padding-bottom: 3rem;">
-    
-    <!-- Loading State -->
-    <div id="loading-state" style="text-align: center; padding: 3rem;">
-        <div style="display: inline-block;">
-            <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px; border-color: var(--primary); border-top-color: transparent;"></div>
-        </div>
-        <p style="margin-top: 1rem; color: var(--secondary);">Cargando evaluación...</p>
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Evaluación</h2>
+        <p class="text-muted">Responde las preguntas disponibles para la lección seleccionada.</p>
     </div>
-    
-    <!-- Contenido de la Evaluación -->
-    <div id="evaluation-content" style="display: none;">
-        
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-            <a href="/cursos/">← Cursos</a>
-            <span>/</span>
-            <a href="#" id="breadcrumb-curso-link">Curso</a>
-            <span>/</span>
-            <span>Evaluación</span>
-        </div>
-        
-        <!-- Header de la Evaluación -->
-        <div class="evaluation-header">
-            <div class="evaluation-header-content">
-                <div class="evaluation-icon">📝</div>
-                <h1 class="evaluation-title" id="evaluation-title">Evaluación del Curso</h1>
-                <p class="evaluation-subtitle">Responde todas las preguntas y envía tu evaluación</p>
-            </div>
-        </div>
-        
-        <!-- Información de la evaluación -->
-        <div class="evaluation-info">
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-icon">❓</div>
-                    <div class="info-text">
-                        <div class="info-label">Total de preguntas</div>
-                        <div class="info-value" id="total-questions">0</div>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">⏱️</div>
-                    <div class="info-text">
-                        <div class="info-label">Tiempo</div>
-                        <div class="info-value">Sin límite</div>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">🎯</div>
-                    <div class="info-text">
-                        <div class="info-label">Tipo</div>
-                        <div class="info-value">Opción múltiple</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Preguntas -->
-        <div id="questions-container"></div>
-        
-        <!-- Botón de envío -->
-        <div class="submit-section">
-            <p style="color: var(--secondary); margin-bottom: 1.5rem;">
-                Asegúrate de haber respondido todas las preguntas antes de enviar
-            </p>
-            <button class="btn-modern btn-primary-modern" onclick="enviarEvaluacion()" style="padding: 0.875rem 2rem; font-size: 1rem;">
-                Enviar evaluación
-            </button>
-        </div>
-        
-    </div>
-    
-    <!-- Resultado de la Evaluación -->
-    <div id="result-content" style="display: none;">
-        
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-            <a href="/cursos/">← Cursos</a>
-            <span>/</span>
-            <a href="#" id="breadcrumb-curso-link-result">Curso</a>
-            <span>/</span>
-            <span>Resultado</span>
-        </div>
-        
-        <div class="result-card">
-            <div class="result-icon" id="result-icon">🎉</div>
-            <h2 class="result-title">¡Evaluación completada!</h2>
-            <div class="result-score" id="result-score">0/0</div>
-            <p class="result-message" id="result-message">Mensaje de resultado</p>
-            <div class="result-details">
-                <span id="result-percentage">0%</span> de respuestas correctas
-            </div>
-        </div>
-        
-        <div style="text-align: center;">
-            <button class="btn-modern btn-primary-modern" onclick="volverAlCurso()" style="margin-right: 1rem;">
-                ← Volver al curso
-            </button>
-            <button class="btn-modern btn-outline-modern" onclick="verCursos()">
-                Ver todos los cursos
-            </button>
-        </div>
-        
-    </div>
-    
-    <!-- Error State -->
-    <div id="error-state" style="display: none;"></div>
-    
+
+    <div id="mensaje" class="mb-3"></div>
+
+    <div id="listaEvaluaciones" class="row"></div>
+
 </div>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
-const API_URL = "http://127.0.0.1:8000";
+verificarSesion();
+
 const token = localStorage.getItem("token");
+const leccionId = "{{ evaluacion_id }}";
 
-// Verificar autenticación
-if (!token) {
-    window.location.href = "/";
-}
-
-// Obtener ID de la evaluación de la URL
-const urlParams = new URLSearchParams(window.location.search);
-const evaluacionId = urlParams.get('id');
-
-if (!evaluacionId) {
-    window.location.href = "/cursos/";
-}
-
-let cursoId = null;
-let preguntas = [];
-let respuestasUsuario = {};
-
-// Cargar datos de la evaluación
-async function cargarEvaluacion() {
-    try {
-        // Obtener datos de la evaluación
-        const response = await fetch(API_URL + "/api/evaluaciones/" + evaluacionId + "/", {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        });
-        
-        if (response.status === 401) {
-            localStorage.removeItem("token");
-            window.location.href = "/";
-            return;
-        }
-        
-        if (!response.ok) {
-            throw new Error("Error al cargar la evaluación");
-        }
-        
-        const evaluacion = await response.json();
-        cursoId = evaluacion.curso;
-        
-        // Obtener datos del curso
-        const cursoResponse = await fetch(API_URL + "/api/cursos/" + cursoId + "/", {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        });
-        
-        const curso = await cursoResponse.json();
-        
-        // Obtener preguntas de la evaluación
-        const preguntasResponse = await fetch(API_URL + "/api/preguntas/?evaluacion=" + evaluacionId, {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        });
-        
-        const preguntasData = await preguntasResponse.json();
-        preguntas = Array.isArray(preguntasData) ? preguntasData : preguntasData.results || [];
-        
-        // Mostrar información
-        mostrarEvaluacion(evaluacion, curso, preguntas);
-        
-    } catch (error) {
-        console.error(error);
-        mostrarError();
+fetch("http://127.0.0.1:8000/api/evaluaciones/?leccion=" + leccionId, {
+    headers: {
+        "Authorization": "Token " + token
     }
-}
+})
+.then(response => {
+    if (response.status === 401 || response.status === 403) {
+        logout();
+    }
+    return response.json();
+})
+.then(data => {
+    const contenedor = document.getElementById("listaEvaluaciones");
+    const mensaje = document.getElementById("mensaje");
 
-function mostrarEvaluacion(evaluacion, curso, preguntas) {
-    // Ocultar loading
-    document.getElementById("loading-state").style.display = "none";
-    document.getElementById("evaluation-content").style.display = "block";
-    
-    // Actualizar breadcrumb
-    document.getElementById("breadcrumb-curso-link").textContent = curso.nombre;
-    document.getElementById("breadcrumb-curso-link").href = "/detalle-curso/?id=" + cursoId;
-    
-    // Actualizar header
-    document.getElementById("evaluation-title").textContent = evaluacion.titulo;
-    document.getElementById("total-questions").textContent = preguntas.length;
-    
-    // Mostrar preguntas
-    const container = document.getElementById("questions-container");
-    
-    if (preguntas.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">❓</div>
-                <h3 class="empty-state-title">No hay preguntas disponibles</h3>
-                <p class="empty-state-description">Esta evaluación aún no tiene preguntas configuradas</p>
+    const evaluaciones = data.results || data;
+
+    if (!Array.isArray(evaluaciones) || evaluaciones.length === 0) {
+        mensaje.innerHTML = `
+            <div class="alert alert-info">
+                No hay evaluaciones registradas para esta lección.
             </div>
         `;
-    } else {
-        preguntas.forEach((pregunta, index) => {
-            const questionCard = crearTarjetaPregunta(pregunta, index);
-            container.innerHTML += questionCard;
-        });
-    }
-}
-
-function crearTarjetaPregunta(pregunta, index) {
-    const opciones = [
-        { key: 'opcion_a', text: pregunta.opcion_a },
-        { key: 'opcion_b', text: pregunta.opcion_b },
-        { key: 'opcion_c', text: pregunta.opcion_c },
-        { key: 'opcion_d', text: pregunta.opcion_d }
-    ].filter(op => op.text); // Filtrar opciones vacías
-    
-    const opcionesHTML = opciones.map(opcion => `
-        <div class="option-item" onclick="seleccionarOpcion(${pregunta.id}, '${opcion.key}')">
-            <div class="option-radio"></div>
-            <div class="option-text">${escapeHtml(opcion.text)}</div>
-        </div>
-    `).join('');
-    
-    return `
-        <div class="question-card" id="question-${pregunta.id}">
-            <div class="question-header">
-                <div class="question-number">${index + 1}</div>
-                <div class="question-text">${escapeHtml(pregunta.texto_pregunta)}</div>
-            </div>
-            <div class="options-list" id="options-${pregunta.id}">
-                ${opcionesHTML}
-            </div>
-        </div>
-    `;
-}
-
-function seleccionarOpcion(preguntaId, opcion) {
-    // Guardar respuesta
-    respuestasUsuario[preguntaId] = opcion;
-    
-    // Actualizar UI
-    const optionsContainer = document.getElementById("options-" + preguntaId);
-    const options = optionsContainer.querySelectorAll(".option-item");
-    
-    options.forEach(opt => {
-        opt.classList.remove("selected");
-    });
-    
-    event.currentTarget.classList.add("selected");
-}
-
-function enviarEvaluacion() {
-    // Verificar que todas las preguntas estén respondidas
-    if (Object.keys(respuestasUsuario).length < preguntas.length) {
-        alert("Por favor responde todas las preguntas antes de enviar");
         return;
     }
-    
-    // Calcular resultado
-    let correctas = 0;
-    
-    preguntas.forEach(pregunta => {
-        const respuestaUsuario = respuestasUsuario[pregunta.id];
-        if (respuestaUsuario === pregunta.respuesta_correcta) {
-            correctas++;
-        }
-    });
-    
-    const porcentaje = Math.round((correctas / preguntas.length) * 100);
-    
-    // Mostrar resultado
-    mostrarResultado(correctas, preguntas.length, porcentaje);
-}
 
-function mostrarResultado(correctas, total, porcentaje) {
-    // Ocultar evaluación
-    document.getElementById("evaluation-content").style.display = "none";
-    
-    // Mostrar resultado
-    document.getElementById("result-content").style.display = "block";
-    
-    // Actualizar breadcrumb
-    document.getElementById("breadcrumb-curso-link-result").textContent = "Curso";
-    document.getElementById("breadcrumb-curso-link-result").href = "/detalle-curso/?id=" + cursoId;
-    
-    // Determinar mensaje y emoji según el resultado
-    let mensaje, emoji;
-    if (porcentaje >= 80) {
-        mensaje = "¡Excelente trabajo! Dominas el tema";
-        emoji = "🎉";
-    } else if (porcentaje >= 60) {
-        mensaje = "¡Buen trabajo! Sigue practicando";
-        emoji = "👍";
-    } else {
-        mensaje = "Revisa el material y vuelve a intentarlo";
-        emoji = "📚";
-    }
-    
-    // Actualizar UI
-    document.getElementById("result-icon").textContent = emoji;
-    document.getElementById("result-score").textContent = correctas + "/" + total;
-    document.getElementById("result-message").textContent = mensaje;
-    document.getElementById("result-percentage").textContent = porcentaje + "%";
-}
+    evaluaciones.forEach(evaluacion => {
+        contenedor.innerHTML += `
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm module-card">
+                    <div class="card-body">
+                        <h5 class="fw-bold">Pregunta</h5>
+                        <p>${evaluacion.pregunta}</p>
 
-function volverAlCurso() {
-    window.location.href = "/detalle-curso/?id=" + cursoId;
-}
+                        <div class="list-group mb-3">
+                            <button class="list-group-item list-group-item-action" onclick="responder(${evaluacion.id}, 'A')">
+                                A. ${evaluacion.opcion_a}
+                            </button>
 
-function verCursos() {
-    window.location.href = "/cursos/";
-}
+                            <button class="list-group-item list-group-item-action" onclick="responder(${evaluacion.id}, 'B')">
+                                B. ${evaluacion.opcion_b}
+                            </button>
 
-function mostrarError() {
-    document.getElementById("loading-state").style.display = "none";
-    
-    const errorState = document.getElementById("error-state");
-    errorState.innerHTML = `
-        <div class="alert-modern alert-error" style="max-width: 600px; margin: 0 auto;">
-            <span>⚠️</span>
-            <div>
-                <strong>Error al cargar la evaluación</strong><br>
-                <span style="font-size: 0.875rem;">No se pudo obtener la información de la evaluación.</span>
+                            <button class="list-group-item list-group-item-action" onclick="responder(${evaluacion.id}, 'C')">
+                                C. ${evaluacion.opcion_c}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div style="text-align: center; margin-top: 1.5rem;">
-            <a href="/cursos/" class="btn-modern btn-outline-modern">← Volver a cursos</a>
+        `;
+    });
+})
+.catch(error => {
+    console.error("Error:", error);
+    document.getElementById("mensaje").innerHTML = `
+        <div class="alert alert-danger">
+            No se pudieron cargar las evaluaciones.
         </div>
     `;
-    errorState.style.display = "block";
-}
+});
 
-function logout() {
-    if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
-        localStorage.removeItem("token");
-        window.location.href = "/";
-    }
+function responder(evaluacionId, respuesta) {
+    fetch("http://127.0.0.1:8000/api/responder/", {
+        method: "POST",
+        headers: {
+            "Authorization": "Token " + token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            evaluacion: evaluacionId,
+            respuesta: respuesta
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje || "Respuesta registrada");
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("No se pudo registrar la respuesta");
+    });
 }
-
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
-}
-
-// Cargar evaluación al iniciar
-cargarEvaluacion();
 </script>
-
-</body>
-</html>
+{% endblock %}

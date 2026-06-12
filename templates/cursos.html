@@ -1,195 +1,80 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cursos - Plataforma Educativa</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="/static/css/styles.css">
-    
-    <style>
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-    </style>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Cursos - Plataforma Educativa{% endblock %}
 
-<!-- Navbar -->
-<nav class="navbar-modern">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="navbar-brand">Plataforma Educativa</div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <a href="/dashboard/" class="btn-modern btn-outline-modern" style="text-decoration: none;">
-                ← Dashboard
-            </a>
-            <button class="btn-modern btn-danger-modern" onclick="logout()">
-                Cerrar sesión
-            </button>
-        </div>
-    </div>
-</nav>
+{% block content %}
 
-<!-- Contenido Principal -->
-<div class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
-    <div class="page-header">
-        <h1 class="page-title">Explora tus cursos</h1>
-        <p class="page-subtitle">Descubre contenido diseñado para tu aprendizaje</p>
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Cursos disponibles</h2>
+        <p class="text-muted">Selecciona un curso para consultar sus lecciones y evaluaciones.</p>
     </div>
-    
-    <!-- Loading State -->
-    <div id="loading-state" style="text-align: center; padding: 3rem;">
-        <div style="display: inline-block;">
-            <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px; border-color: var(--primary); border-top-color: transparent;"></div>
-        </div>
-        <p style="margin-top: 1rem; color: var(--secondary);">Cargando cursos...</p>
-    </div>
-    
-    <!-- Grid de Cursos -->
-    <div id="lista-cursos" class="courses-grid" style="display: none;"></div>
-    
-    <!-- Empty State -->
-    <div id="empty-state" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">📚</div>
-        <h3 class="empty-state-title">No hay cursos disponibles</h3>
-        <p class="empty-state-description">Por el momento no hay cursos para mostrar</p>
-    </div>
-    
-    <!-- Error State -->
-    <div id="error-state" style="display: none;"></div>
+
+    <div id="mensaje" class="mb-3"></div>
+
+    <div id="listaCursos" class="row"></div>
+
 </div>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
-const API_URL = "http://127.0.0.1:8000";
+verificarSesion();
+
 const token = localStorage.getItem("token");
 
-// Verificar autenticación
-if (!token) {
-    window.location.href = "/";
-}
-
-// Emojis de ejemplo para cursos
-const courseIcons = ['🎓', '💡', '🔬', '📊', '🎨', '💻', '🌍', '📚', '🧪', '📐'];
-
-// Cargar cursos
-fetch(API_URL + "/api/cursos/", {
+fetch("http://127.0.0.1:8000/api/cursos/", {
     headers: {
         "Authorization": "Token " + token
     }
 })
 .then(response => {
-    if (response.status === 401) {
-        // Token inválido o expirado
-        localStorage.removeItem("token");
-        window.location.href = "/";
-        return;
+    if (response.status === 401 || response.status === 403) {
+        logout();
     }
-    
-    if (!response.ok) {
-        throw new Error("Error al cargar los cursos");
-    }
-    
     return response.json();
 })
 .then(data => {
-    const cursos = Array.isArray(data) ? data : data.results;
-    
-    // Ocultar loading
-    document.getElementById("loading-state").style.display = "none";
-    
-    if (!cursos || cursos.length === 0) {
-        // Mostrar empty state
-        document.getElementById("empty-state").style.display = "block";
+    const contenedor = document.getElementById("listaCursos");
+    const mensaje = document.getElementById("mensaje");
+
+    const cursos = data.results || data;
+
+    if (!Array.isArray(cursos) || cursos.length === 0) {
+        mensaje.innerHTML = `
+            <div class="alert alert-info">
+                No hay cursos registrados actualmente.
+            </div>
+        `;
         return;
     }
-    
-    // Mostrar grid de cursos
-    const contenedor = document.getElementById("lista-cursos");
-    contenedor.style.display = "grid";
-    
-    cursos.forEach((curso, index) => {
-        const icon = courseIcons[index % courseIcons.length];
-        
-        const courseCard = `
-            <div class="card-course" onclick="verCurso(${curso.id})" style="cursor: pointer;">
-                <div class="card-course-header">
-                    <div class="card-course-icon">${icon}</div>
-                </div>
-                <div class="card-course-body">
-                    <h3 class="card-course-title">${escapeHtml(curso.nombre)}</h3>
-                    <p class="card-course-description">${escapeHtml(curso.descripcion)}</p>
-                </div>
-                <div class="card-course-footer">
-                    <div class="card-course-meta">
-                        <div class="card-course-meta-item">
-                            <span>📖</span>
-                            <span>Curso completo</span>
-                        </div>
-                        <div class="card-course-meta-item">
-                            <span>⏱️</span>
-                            <span>A tu ritmo</span>
-                        </div>
+
+    cursos.forEach(curso => {
+        contenedor.innerHTML += `
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 module-card">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">${curso.nombre}</h5>
+                        <p class="card-text text-muted">${curso.descripcion || "Sin descripción disponible."}</p>
+
+                        <a href="/leccion/${curso.id}/" class="btn btn-primary btn-sm">
+                            Ver lecciones
+                        </a>
                     </div>
                 </div>
             </div>
         `;
-        
-        contenedor.innerHTML += courseCard;
     });
 })
 .catch(error => {
-    console.error(error);
-    
-    // Ocultar loading
-    document.getElementById("loading-state").style.display = "none";
-    
-    // Mostrar error
-    const errorState = document.getElementById("error-state");
-    errorState.innerHTML = `
-        <div class="alert-modern alert-error" style="max-width: 600px; margin: 0 auto;">
-            <span>⚠️</span>
-            <div>
-                <strong>Error al cargar los cursos</strong><br>
-                <span style="font-size: 0.875rem;">Por favor, intenta recargar la página o contacta con soporte si el problema persiste.</span>
-            </div>
+    console.error("Error:", error);
+    document.getElementById("mensaje").innerHTML = `
+        <div class="alert alert-danger">
+            No se pudieron cargar los cursos.
         </div>
     `;
-    errorState.style.display = "block";
 });
-
-function logout() {
-    // Confirmar cierre de sesión
-    if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
-        localStorage.removeItem("token");
-        window.location.href = "/";
-    }
-}
-
-function verCurso(cursoId) {
-    window.location.href = "/detalle-curso/?id=" + cursoId;
-}
-
-// Función para escapar HTML y prevenir XSS
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
-}
 </script>
-
-</body>
-</html>
+{% endblock %}
