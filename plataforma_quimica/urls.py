@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.authtoken.views import obtain_auth_token
+
+from usuarios.views import CustomAuthToken
 
 from .views import (
     login_view,
@@ -8,6 +9,7 @@ from .views import (
     cursos_view,
     leccion_view,
     evaluacion_view,
+    usuarios_view,
 )
 
 
@@ -20,12 +22,13 @@ urlpatterns = [
     path("", login_view, name="login"),
     path("dashboard/", dashboard_view, name="dashboard"),
     path("cursos/", cursos_view, name="cursos"),
-    path("leccion/<int:leccion_id>/", leccion_view, name="leccion"),
-    path("evaluacion/<int:evaluacion_id>/", evaluacion_view, name="evaluacion"),
+    path("leccion/", leccion_view, name="leccion"),
+    path("evaluacion/", evaluacion_view, name="evaluacion"),
+    path("usuarios/", usuarios_view, name="usuarios"),
 
     path("admin/", admin.site.urls),
 
-    path("api/token/", obtain_auth_token, name="api_token"),
+    path("api/token/", CustomAuthToken.as_view(), name="api_token"),
     path("api/usuarios/", include("usuarios.urls")),
     path("api/", include("cursos.urls")),
     path("api/", include("lecciones.urls")),
